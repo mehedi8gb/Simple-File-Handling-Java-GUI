@@ -14,8 +14,9 @@ import javax.swing.*;
 
 public class MainFrame extends JFrame {
 
-    private File file = new File(System.getProperty("user.dir") + "\\file\\create.txt");
-
+    
+   private File tempFile = new File(System.getProperty("user.dir") + "\\file\\Temp.txt");
+   private File file = new File(System.getProperty("user.dir") + "\\file\\Create.txt");
     JButton addBtn;
     JButton createBtn;
     JButton deleteBtn;
@@ -66,6 +67,11 @@ public class MainFrame extends JFrame {
         editBtn.setBounds(40, 250, 320, 60);
 
         deleteBtn.setText("Delete File");
+        deleteBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                deleteBtnActionPerformed(evt);
+            }
+        });
         menuPanel.add(deleteBtn);
         deleteBtn.setBounds(40, 330, 320, 60);
 
@@ -101,10 +107,7 @@ public class MainFrame extends JFrame {
     private String getDataFromFile(String search) {
         String currentData = null;
         try {
-            File tempFile = new File(System.getProperty("user.dir") +  "\\file\\Temp.txt");
-            File inputFile = new File(System.getProperty("user.dir") + "\\file\\Create.txt");
-
-            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            BufferedReader reader = new BufferedReader(new FileReader(file));
             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
             String currentLine;
 
@@ -126,17 +129,12 @@ public class MainFrame extends JFrame {
 
     public void editLineFromFile(String Search, String lineToAdd) {
         try {
-
-            File tempFile = new File(System.getProperty("user.dir") + "\\file\\Temp.txt");
-            File inputFile = new File(System.getProperty("user.dir") + "\\file\\Create.txt");
-
-            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            BufferedReader reader = new BufferedReader(new FileReader(file));
             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
             String currentLine;
             String currentData;
             String updatedAt = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime());
             while ((currentLine = reader.readLine()) != null) {
-                // trim newline when comparing with lineToRemove
                 currentLine = currentLine.trim();
                 String[] trimLine = currentLine.split("!");
                 if (trimLine[0].equals(Search.trim())) {
@@ -147,7 +145,7 @@ public class MainFrame extends JFrame {
             }
             writer.close();
             reader.close();
-            BufferedWriter BW = new BufferedWriter(new FileWriter(inputFile));
+            BufferedWriter BW = new BufferedWriter(new FileWriter(file));
             BufferedReader BR = new BufferedReader(new FileReader(tempFile));
 
             while ((currentData = BR.readLine()) != null) {
@@ -168,6 +166,7 @@ public class MainFrame extends JFrame {
         try {
                 file.createNewFile();
                 System.out.println("file created! " + file.getName());
+                JOptionPane.showMessageDialog(this, "File Created!","Success" ,JOptionPane.PLAIN_MESSAGE);
         } catch (IOException ex) {
             System.out.println("system sucks while file creation! " + System.getProperty("user.dir") + ex);
         }
@@ -231,5 +230,13 @@ public class MainFrame extends JFrame {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }    
+    }  
+    private void deleteBtnActionPerformed(ActionEvent evt) {
+        if(file.exists()){
+            file.delete();
+            JOptionPane.showMessageDialog(this, "File Successfully deleted", "Operation Success", JOptionPane.NO_OPTION);
+        }else{
+            JOptionPane.showMessageDialog(this, "You have not created any file yet!", "Operation Failed", JOptionPane.ERROR_MESSAGE);
+        }
+    }  
 }
